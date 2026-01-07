@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'IMAGE_TAG',
+            defaultValue: '1',
+            description: 'Docker image tag to deploy from Docker Hub'
+        )
+    }
+
+    environment {
+        IMAGE_NAME = "mydockerhubuser/maven-web-app"
+    }
+
+    stages {
+
+        stage('Manual Approval') {
+            steps {
+                input message: "Approve deployment of image ${IMAGE_TAG}?"
+            }
+        }
+
+        stage('Pull Image from Docker Hub') {
+            steps {
+                sh '''
+                  docker pull $IMAGE_NAME:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                sh '''
+                  docker stop webapp || true
+                  docker rm webapp || true
+
+                  docker run -d \
+                    --name webapp \
+                    -p 8081:8080 \
+                    $IMAGE_NAME:${IMAGE_TAG}
+                '''
+            }
+        }
+    }
+}
+
