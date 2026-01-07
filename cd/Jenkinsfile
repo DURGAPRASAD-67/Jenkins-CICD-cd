@@ -10,7 +10,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "mydockerhubuser/maven-web-app"
+        IMAGE_NAME = "prasad67/maven-web-app"
     }
 
     stages {
